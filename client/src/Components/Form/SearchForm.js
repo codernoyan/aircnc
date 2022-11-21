@@ -1,16 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PrimaryButton from '../Button/PrimaryButton'
 import { CalendarIcon } from '@heroicons/react/20/solid'
 import DatePicker from 'react-datepicker'
+import { useNavigate } from 'react-router-dom'
 
 const SearchForm = () => {
+  const [location, setLocation] = useState('');
+  const [arrivalDate, setArrivalDate] = useState(new Date());
+  const [departureDate, setDepartureDate] = useState(
+    new Date(arrivalDate.getTime() + 24 * 60 * 60 * 1000)
+  );
+  const navigate = useNavigate();
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const query = {
+      location: location,
+      from: arrivalDate,
+      to: departureDate
+    };
+    navigate('/search-result', {state: query});
+  }
+
   return (
     <div className='w-full max-w-sm p-6 m-auto mx-auto'>
       <h1 className='text-xl font-semibold text-gray-700'>
         Where do you want to go
       </h1>
 
-      <form className='mt-6'>
+      <form onSubmit={handleSubmit} className='mt-6'>
         <div className='shadow-md rounded-md my-2 p-3'>
           <label
             htmlFor='location'
@@ -19,6 +36,7 @@ const SearchForm = () => {
             Location
           </label>
           <input
+            onChange={(e) => setLocation(e.target.value)}
             type='text'
             name='location'
             required
@@ -31,7 +49,7 @@ const SearchForm = () => {
           <div className='shadow-md rounded-md my-2 p-3 flex justify-between items-center'>
             <div>
               <p className='block text-sm text-gray-500'>Arrival</p>
-              <DatePicker selected={new Date()} className='w-2/3' />
+              <DatePicker selected={arrivalDate} className='w-2/3' onChange={(date) => setArrivalDate(date)} />
             </div>
 
             <CalendarIcon className='h5 w-5' />
@@ -39,7 +57,7 @@ const SearchForm = () => {
           <div className='shadow-md rounded-md my-2 p-3 flex justify-between items-center'>
             <div>
               <p className='block text-sm text-gray-500'>Departure</p>
-              <DatePicker selected={new Date()} className='w-2/3' />
+              <DatePicker selected={departureDate} className='w-2/3' onChange={(date)=> setDepartureDate(date)} />
             </div>
 
             <CalendarIcon className='h5 w-5' />
